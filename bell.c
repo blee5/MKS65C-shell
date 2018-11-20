@@ -16,31 +16,23 @@ int main()
     int pid;
     while (1)
     {
+        char *buf;
         buffer_size = 10;
         input_size = 0;
         input_buffer = calloc(1, 10);
         printf("Enter a command: ");
-        while (fgets(temp_buffer, 2, stdin) && strcmp(temp_buffer, "\n"))
-        {
-            input_size++;
-            if (input_size >= buffer_size)
-            {
-                buffer_size *= 2;
-                input_buffer = realloc(input_buffer, buffer_size);
-            }
-            strcat(input_buffer, temp_buffer);
-        }
-        if (*input_buffer)
+        buf = read_line();
+        if (*buf)
         {
             pid = fork();
             if (pid)
             {
-                free(input_buffer);
+                free(buf);
                 wait(NULL);
             }
             else
             {
-                char **args = parse_args(input_buffer);
+                char **args = parse_args(buf);
                 if (args)
                 {
                     execvp(args[0], args);
