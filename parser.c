@@ -2,26 +2,46 @@
 #include <stdlib.h>
 #include "parser.h"
 
-const int MAX_ARGS = 10;
-const int INIT_ARGS_SIZE = 5;
+/*
+ * parser.c
+ * 
+ * contains functions that handle user input
+ * (maybe I should rename this someday)
+ */
+
+const int MAX_ARGS = 20;
 
 /*
  * Parses a string representing a command line input
- * separated by space.
+ * separated by space. WILL MODIFY THE STRING!!
  *
  * Arguments:
- * @args: string describing command line input,
+ * @args: string describing command line input
  *
  * Return Value:
- * An array of strings
+ * An array of strings terminated by a null pointer.
+ *
+ * Error:
+ * If the number of arguments exceed MAX_ARGS,
+ * it will return a null pointer.
  */
-char **parse_args(const char *args)
+char **parse_args(char *args)
 {
-    char *argstr = malloc(strlen(args));
-    char **args_array = malloc(sizeof(char *) * INIT_ARGS_SIZE);
-    int i;
-    strcpy(argstr, args);
-    while (
-    args_array[0] = strsep(&argstr, " ");
+    char **args_array = malloc(sizeof(char *) * (MAX_ARGS + 1));
+    char *token;
+    int i = 0;
+    while (token = strsep(&args, " "))
+    {
+        if (i == MAX_ARGS) // too many args
+        {
+            free(args_array);
+            return 0;
+        }
+        if (strcmp(token, ""))
+        {
+            args_array[i++] = token;
+        }
+    }
+    args_array[i] = 0;
     return args_array;
 }
