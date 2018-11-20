@@ -41,9 +41,16 @@ int main()
             else
             {
                 char **args = parse_args(input_buffer);
-                execvp(args[0], args);
-                printf("Error %d: %s\n", errno, strerror(errno));
-                free(args);
+                if (args)
+                {
+                    execvp(args[0], args);
+                    printf("Error %d: %s\n", errno, strerror(errno));
+                    free(args);
+                }
+                else
+                {
+                    printf("Too many arguments.\n");
+                }
                 return -1;
             }
         }

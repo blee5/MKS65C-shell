@@ -6,7 +6,6 @@
  * parser.c
  * 
  * contains functions that handle user input
- * (maybe I should rename this someday)
  */
 
 const int MAX_ARGS = 20;
