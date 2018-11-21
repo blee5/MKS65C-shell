@@ -27,7 +27,7 @@ NOTE: bell is currently incomplete
 - idk
 
 ## Functions
-```
+```c
 void quit_shell();
 int execute(char **args);
 void loop();
