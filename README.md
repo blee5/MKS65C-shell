@@ -34,6 +34,7 @@ void loop();
 int main();
 
 char *read_line();
+char ***parse_lines(char *args);
 char **parse_args(char *args);
 
 int bell_cd(char **args);
