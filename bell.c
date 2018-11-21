@@ -9,7 +9,7 @@
 #define BOLD "\e[1m"
 #define REGULAR "\e[0m"
 #define GREEN "\x1B[32m"
-#define idk "\x1B[34m"
+#define YELLOW "\x1B[33m"
 #define WHITE "\x1B[37m"
 
 char *buf;
@@ -56,10 +56,15 @@ void loop()
 {
     int i;
     char cwd[256];
+    char usr[256];
+    char hostname[256];
     while (1)
     {
         getcwd(cwd, 256);
-        printf(GREEN BOLD "%s" WHITE REGULAR " >> ", cwd);
+        getlogin_r(usr, 256);
+        gethostname(hostname, 256);
+        printf(GREEN BOLD "%s@%s" WHITE":" YELLOW "%s" WHITE REGULAR " >> "
+            ,usr, hostname, cwd);
         buf = read_line();
         commands = parse_line(buf);
         for (i = 0; commands[i]; i++)
