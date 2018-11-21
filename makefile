@@ -1,6 +1,6 @@
-compile:
-	gcc *.c *.h -o bell
+compile: bell.c parser.c builtins.c bell.h
+	gcc bell.c parser.c builtins.c bell.h -o bell
 
-debug:
-	gcc *.c *.h -o bell -g
+debug: bell.c parser.c builtins.c bell.h
+	gcc bell.c parser.c builtins.c bell.h -o bell -g
 

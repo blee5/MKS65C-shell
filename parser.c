@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "parser.h"
+#include "bell.h"
 
 /*
  * parser.c

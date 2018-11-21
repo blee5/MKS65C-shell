@@ -4,8 +4,7 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include "parser.h"
-#include "builtins.h"
+#include "bell.h"
 
 #define BOLD "\e[1m"
 #define REGULAR "\e[0m"
