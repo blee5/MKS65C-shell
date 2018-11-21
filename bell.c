@@ -13,15 +13,20 @@
 #define WHITE "\x1B[37m"
 
 char *buf;
-char **args;
+char ***commands;
 
 /*
  * Clean up stuff and exit
  */
 void quit_shell()
 {
+    int i;
+    for (i = 0; commands[i]; i++)
+    {
+        free(commands[i]);
+    }
+    free(commands);
     free(buf);
-    free(args);
     exit(0);
 }
 
@@ -64,19 +69,27 @@ int execute(char **args)
 
 void loop()
 {
+    int i;
     char cwd[256];
     while (1)
     {
         getcwd(cwd, 256);
         printf(GREEN BOLD "%s" WHITE REGULAR " >> ", cwd);
         buf = read_line();
-        args = parse_args(buf);
-        if (execute(args) == 1)
+        commands = parse_line(buf);
+        for (i = 0; commands[i]; i++)
         {
-            quit_shell();
+            if (execute(commands[i]) == 1)
+            {
+                quit_shell();
+            }
         }
         free(buf);
-        free(args);
+        for (i = 0; commands[i]; i++)
+        {
+            free(commands[i]);
+        }
+        free(commands);
     }
 }
 
