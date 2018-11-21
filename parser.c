@@ -12,38 +12,39 @@
 const int MAX_ARGS = 20;
 
 /*
- * Read user input from stdin, until a newline character is reached.
+ * Read user input from stdin, until a newline
  *
  * Return Value:
  * A string containing user input, excluding the newline character.
- * TODO:
- * Returns a null pointer if an EOF (Ctrl+D) character is read.
  */
 char *read_line()
 {
-    char *input_buffer;
-    char *temp_buffer = malloc(2);
-    int buffer_size;
-    int input_size;
-    
-    buffer_size = 10;
-    input_size = 0;
-    input_buffer = calloc(1, 10);
-    while (fgets(temp_buffer, 2, stdin) && strcmp(temp_buffer, "\n"))
+    int buflen = 10;
+    char *buffer = malloc(buflen);
+    int c;
+    int i = 0;
+    while (1)
     {
-        input_size++;
-        if (input_size >= buffer_size)
+        c = fgetc(stdin);
+        if (c != EOF)
         {
-            buffer_size *= 2;
-            input_buffer = realloc(input_buffer, buffer_size);
+            if (c == '\n')
+            {
+                buffer[i] = 0;
+                return buffer;
+            }
+            buffer[i++] = c;
+            if (i >= buflen)
+            {
+                buflen *= 2;
+                buffer = realloc(buffer, buflen);
+            }
         }
-        strcat(input_buffer, temp_buffer);
     }
-    return input_buffer;
 }
 
 /*
- * Parses a string representing a command line input
+ * Parses a string representing a single command,
  * separated by space. WILL MODIFY THE STRING!!
  *
  * Arguments:
@@ -52,7 +53,6 @@ char *read_line()
  * Return Value:
  * An array of strings terminated by a null pointer.
  *
- * Error:
  * If the number of arguments exceed MAX_ARGS,
  * it will return a null pointer.
  */
