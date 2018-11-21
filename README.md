@@ -28,7 +28,7 @@ Can do basic stuff a shell should do, like:
 - idk
 
 ## Functions
-```
+```c
 void quit_shell();
 int execute(char **args);
 void loop();
