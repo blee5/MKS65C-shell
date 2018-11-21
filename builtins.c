@@ -26,7 +26,7 @@ int (*f_builtins[]) (char **) =
  * If unsucessful, will report the error.
  *
  * Arguments:
- * @args: An array in the format:
+ * args: An array in the format:
  * {"cd", path, NULL} or {"cd", NULL}.
  * If path does not exist the working directory will be changed to the home directory of the user.
  *

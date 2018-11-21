@@ -51,7 +51,7 @@ char *read_line()
  * Note that the array may contain null pointers.
  *
  * Arguments:
- * @args: string describing command line input
+ * args: string describing command line input
  *
  * Return Value:
  * An array of array of strings, terminated by a null pointer.
@@ -75,7 +75,7 @@ char ***parse_line(char *args)
  * separated by space. WILL MODIFY THE STRING!!
  *
  * Arguments:
- * @args: string describing command line input
+ * args: string describing command line input
  *
  * Return Value:
  * An array of strings terminated by a null pointer. 
