@@ -11,7 +11,7 @@ NOTE: bell is currently incomplete
 - You can execute programs wow
 - Multiple commands on one line (with `;`)
 - Organic, free range, GMO free shell made in the USA
-- Ceritifed memory leak free
+- Ceritifed memory leak free (probably not)
 
 ### TODO
 - Redirect stdout and stdin with `>` and `<`
@@ -24,7 +24,7 @@ NOTE: bell is currently incomplete
 - Wildcards
 
 ## Bugs
-- idk
+- SIGTSTP (Ctrl+Z) isn't handled and I don't think I want to
 
 ## Functions
 ```c

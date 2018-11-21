@@ -16,21 +16,6 @@ char *buf;
 char ***commands;
 
 /*
- * Clean up stuff and exit
- */
-void quit_shell()
-{
-    int i;
-    for (i = 0; commands[i]; i++)
-    {
-        free(commands[i]);
-    }
-    free(commands);
-    free(buf);
-    exit(0);
-}
-
-/*
  * Runs a program or a shell builtin.
  */
 int execute(char **args)
@@ -38,10 +23,10 @@ int execute(char **args)
     int i;
     if (args[0] == 0)
     {
-        // empty command
+        /* Command was empty */
         return 0;
     }
-    // run if builtin
+    /* Check and run if builtin command */
     for (i = 0; builtins[i]; i++)
     {
         if (strcmp(args[0], builtins[i]) == 0)
@@ -50,20 +35,20 @@ int execute(char **args)
         }
     }
 
-    // run program
+    /* Run program */
     if (fork())
     {
-        // parent
+        /* Parent process */
         int status;
         wait(&status);
         return 0;
     }
     else
     {
-        // child
+        /* Child process */
         execvp(args[0], args);
         printf("%s: %s\n", args[0], strerror(errno));
-        quit_shell();
+        exit(0);
     }
 }
 
@@ -81,7 +66,7 @@ void loop()
         {
             if (execute(commands[i]) == 1)
             {
-                quit_shell();
+                exit(0);
             }
         }
         free(buf);
@@ -95,7 +80,6 @@ void loop()
 
 int main()
 {
-    signal(SIGINT, quit_shell);
     loop();
     return 0;
 }
