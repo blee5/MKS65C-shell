@@ -12,9 +12,6 @@
 #define YELLOW "\x1B[33m"
 #define WHITE "\x1B[37m"
 
-char *buf;
-char ***commands;
-
 /*
  * Runs a program or a shell builtin.
  */
@@ -46,45 +43,76 @@ int execute(char **args)
     else
     {
         /* Child process */
+        signal(SIGINT, SIG_DFL);
         execvp(args[0], args);
         printf("%s: %s\n", args[0], strerror(errno));
-        exit(0);
+        exit(-1);
     }
+}
+
+void print_user_info()
+{
+    char cwd[256];
+    char usr[256];
+    char hostname[256];
+    getcwd(cwd, 256);
+    getlogin_r(usr, 256);
+    gethostname(hostname, 256);
+    printf(GREEN BOLD "%s@%s" WHITE":" YELLOW "%s" WHITE REGULAR " >> ", usr, hostname, cwd);
+    fflush(stdout);
+}
+
+/*
+ * Execute all commands in the buffer
+ */
+void execute_commands(char *buf)
+{
+    int i;
+    int n;
+    char ***commands = parse_line(buf, &n);
+    for (i = 0; i < n; i++)
+    {
+        if (commands[i] == NULL)
+        {
+            printf("bell: Too many arguments\n");
+        }
+        else if (execute(commands[i]) == 1)
+        {
+            exit(0);
+        }
+    }
+    for (i = 0; i < n; i++)
+    {
+        if (commands[i])
+        {
+            free(commands[i]);
+        }
+    }
+    free(commands);
 }
 
 void loop()
 {
-    int i;
-    char cwd[256];
-    char usr[256];
-    char hostname[256];
+    char *buf;
     while (1)
     {
-        getcwd(cwd, 256);
-        getlogin_r(usr, 256);
-        gethostname(hostname, 256);
-        printf(GREEN BOLD "%s@%s" WHITE":" YELLOW "%s" WHITE REGULAR " >> "
-            ,usr, hostname, cwd);
+        print_user_info();
         buf = read_line();
-        commands = parse_line(buf);
-        for (i = 0; commands[i]; i++)
+        if (buf == NULL)
         {
-            if (execute(commands[i]) == 1)
-            {
-                exit(0);
-            }
+            printf("bell: Input too long\n");
         }
-        free(buf);
-        for (i = 0; commands[i]; i++)
+        else
         {
-            free(commands[i]);
+            execute_commands(buf);
+            free(buf);
         }
-        free(commands);
     }
 }
 
 int main()
 {
+    signal(SIGINT, SIG_IGN);
     loop();
     return 0;
 }

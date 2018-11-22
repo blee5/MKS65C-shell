@@ -24,12 +24,15 @@ NOTE: bell is currently incomplete
 - Wildcards
 
 ## Bugs
+- Piping into bell doesn't print newlines
 - SIGTSTP (Ctrl+Z) isn't handled and I don't think I want to
 
 ## Functions
 ```c
 void quit_shell();
 int execute(char **args);
+void print_user_info()
+void execute_commands(char *buf)
 void loop();
 int main();
 

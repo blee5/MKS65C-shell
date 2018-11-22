@@ -1,7 +1,7 @@
 #ifndef DEF_PARSER
 #define DEF_PARSER
 char *read_line();
-char ***parse_line(char *args);
+char ***parse_line(char *args, int *n);
 char **parse_args(char *args);
 #endif
 

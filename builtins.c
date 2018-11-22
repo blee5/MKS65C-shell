@@ -16,9 +16,9 @@ char *builtins[] =
 // why do declaring function pointers look so weird
 int (*f_builtins[]) (char **) = 
 {
-    &bell_cd,
-    &bell_help,
-    &bell_exit,
+    bell_cd,
+    bell_help,
+    bell_exit,
 };
 
 /*

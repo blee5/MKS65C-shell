@@ -10,63 +10,67 @@
  * contains functions that handle user input
  */
 
-const int MAX_ARGS = 255;
+/*
+ * These limits set low on purpose
+ */
+const int MAX_ARGS = 10;
+const int MAX_LENGTH = 50;
 
 /*
- * Read user input from stdin, until a newline
+ * Read user input from stdin.
  *
  * Return Value:
  * A string containing user input, excluding the newline character.
+ *
+ * Error:
+ * If the input is longer than MAX_LENGTH, a null pointer is returned.
  */
+
 char *read_line()
 {
-    int buflen = 10;
-    char *buffer = malloc(buflen);
-    int c;
-    int i = 0;
-    while (1)
+    char *buffer = malloc(MAX_LENGTH);
+    fgets(buffer, MAX_LENGTH, stdin);
+    if (buffer[strlen(buffer) - 1] == '\n')
     {
-        c = fgetc(stdin);
-        if (c != EOF)
-        {
-            if (c == '\n')
-            {
-                buffer[i] = 0;
-                return buffer;
-            }
-            buffer[i++] = c;
-            if (i >= buflen)
-            {
-                buflen *= 2;
-                buffer = realloc(buffer, buflen);
-            }
-        }
+        /* Remove newline */
+        buffer[strlen(buffer) - 1] = 0;
+        return buffer;
     }
+    free(buffer);
+    /* Discard rest of stdin buffer */
+    int c;
+    do
+    {
+        c = getchar();
+    }
+    while (c != '\n');
+    return 0;
 }
 
 /*
  * Parses a string representing user input,
  * with each command separated by semicolons.
- * 
- * Note that the array may contain null pointers.
  *
+ * 
+ * 
  * Arguments:
  * args: string describing command line input
+ * n: pointer to an int, will be set to length of the array
  *
  * Return Value:
  * An array of array of strings, terminated by a null pointer.
  * (Refer to parse_args)
  */
-char ***parse_line(char *args)
+char ***parse_line(char *args, int *n)
 {
     char ***commands = malloc(sizeof(char *) * 255);
     char *token;
-    long i = 0;
+    int i = 0;
     while (token = strsep(&args, ";"))
     {
         commands[i++] = parse_args(token);
     }
-    commands[i] = 0;
+    *n = i;
     return commands;
 }
 
@@ -84,14 +88,15 @@ char ***parse_line(char *args)
  * If the number of arguments exceed MAX_ARGS,
  * it will return a null pointer.
  */
+
 char **parse_args(char *args)
 {
-    char **args_array = malloc(sizeof(char *) * MAX_ARGS);
+    char **args_array = malloc(sizeof(char *) * MAX_ARGS + 1); // add 1 for the null at the end
     char *token;
     long i = 0;
     while (token = strsep(&args, " "))
     {
-        if (i == MAX_ARGS - 1)
+        if (i == MAX_ARGS)
         {
             free(args_array);
             return 0;
