@@ -10,7 +10,6 @@ int main();
 #define DEF_PARSER
 int MAX_ARGS;
 int MAX_LENGTH;
-char *read_line();
 char **parse_args(char *args);
 #endif
 
