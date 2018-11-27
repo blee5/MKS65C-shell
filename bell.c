@@ -65,6 +65,7 @@ void print_user_info()
 void loop()
 {
     char *buf;
+    char *bufcopy;
     char *token;
     char **args;
     while (1)
@@ -73,14 +74,14 @@ void loop()
         {
             print_user_info();
         }
-        buf = read_line();
+        bufcopy = buf = read_line();
         if (buf == NULL)
         {
             printf("bell: Input too long, max: %d\n", MAX_LENGTH);
         }
         else
         {
-            while (token = strsep(&buf, ";"))
+            while (token = strsep(&bufcopy, ";"))
             {
                 args = parse_args(token);
                 if (args)
