@@ -10,11 +10,8 @@
  * contains functions that handle user input
  */
 
-/*
- * These limits set low on purpose
- */
-const int MAX_ARGS = 10;
-const int MAX_LENGTH = 50;
+int MAX_ARGS = 100;
+int MAX_LENGTH = 500;
 
 /*
  * Read user input from stdin.

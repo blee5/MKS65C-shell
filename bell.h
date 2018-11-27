@@ -1,7 +1,7 @@
 #ifndef DEF_PARSER
 #define DEF_PARSER
-const int MAX_ARGS;
-const int MAX_LENGTH;
+int MAX_ARGS;
+int MAX_LENGTH;
 char *read_line();
 char **parse_args(char *args);
 #endif

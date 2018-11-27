@@ -13,7 +13,6 @@ char *builtins[] =
     0,
 };
 
-// why do declaring function pointers look so weird
 int (*f_builtins[]) (char **) = 
 {
     bell_cd,
@@ -21,6 +20,16 @@ int (*f_builtins[]) (char **) =
     bell_exit,
 };
 
+/*
+ * Given a null terminated array of strings,
+ * returns the length the array (excluding the null pointer)
+ */
+int arg_count(char **args)
+{
+    int i = 0;
+    while (args[i++]);
+    return i - 1;
+}
 /*
  * Changes the current working directory of the shell.
  * If unsucessful, will report the error.
@@ -37,14 +46,10 @@ int (*f_builtins[]) (char **) =
 
 int bell_cd(char **args)
 { 
-    int i;
-    for (i = 0; args[i]; i++)
+    if (arg_count(args) > 2)
     {
-        if (i == 2)
-        {
-            printf("bell: cd: Too many arguments\n");
-            return -1;
-        }
+        printf("bell: cd: Too many arguments\n");
+        return -1;
     }
     char *path = args[1];
     if (path == NULL)

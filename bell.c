@@ -43,7 +43,7 @@ int execute(char **args)
     else
     {
         /* Child process */
-        signal(SIGINT, SIG_DFL);
+        signal(SIGINT, SIG_DFL); // allow child processes to be interrupted
         execvp(args[0], args);
         printf("%s: %s\n", args[0], strerror(errno));
         exit(-1);

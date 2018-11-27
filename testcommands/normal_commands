@@ -1,0 +1,10 @@
+ls --color
+mkdir foo
+ls --color
+echo heyhey whats up!!
+rmdir foo
+ls -l --color
+cd
+pwd
+help
+exit

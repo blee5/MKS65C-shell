@@ -3,7 +3,7 @@
 bell is a shell written as a final project for the Systems Development class at Stuyvesant High School.
 It's like a worse version of Bash.
 
-NOTE: bell is currently incomplete
+The `testcommands` directory has useful commands that you can run with bell by `bell < testcommands/<filename>` that demonstrate the functions of bell.
 
 ## Features
 
