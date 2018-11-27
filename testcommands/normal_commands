@@ -4,7 +4,6 @@ ls --color
 echo heyhey whats up!!
 rmdir foo
 ls -l --color
-cd
-pwd
+cd; ls --color; pwd; echo YEAH SEMICOLONS
 help
 exit
