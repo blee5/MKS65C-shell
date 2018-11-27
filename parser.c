@@ -14,39 +14,6 @@ int MAX_ARGS = 100;
 int MAX_LENGTH = 500;
 
 /*
- * Read user input from stdin.
- *
- * Return Value:
- * A string containing user input, excluding the newline character.
- *
- * Error:
- * If the input is longer than MAX_LENGTH, a null pointer is returned.
- */
-
-char *read_line()
-{
-    char *buffer = malloc(MAX_LENGTH);
-    fgets(buffer, MAX_LENGTH, stdin);
-
-    /* Check if input fit in buffer */
-    if (buffer[strlen(buffer) - 1] == '\n')
-    {
-        /* Remove newline */
-        buffer[strlen(buffer) - 1] = 0;
-        return buffer;
-    }
-
-    /* Input was too long, return null */
-    free(buffer);
-    /* Discard rest of stdin buffer */
-    int c;
-    do
-        c = getchar();
-    while (c != '\n');
-    return 0;
-}
-
-/*
  * Parses a string representing a single command,
  * separated by space. WILL MODIFY THE STRING!!
  *
