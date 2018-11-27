@@ -48,33 +48,6 @@ char *read_line()
 }
 
 /*
- * Parses a string representing user input,
- * with each command separated by semicolons.
- *
- * 
- * 
- * Arguments:
- * args: string describing command line input
- * n: pointer to an int, will be set to length of the array
- *
- * Return Value:
- * An array of array of strings, terminated by a null pointer.
- * (Refer to parse_args)
- */
-char ***parse_line(char *args, int *n)
-{
-    char ***commands = malloc(sizeof(char *) * 255);
-    char *token;
-    int i = 0;
-    while (token = strsep(&args, ";"))
-    {
-        commands[i++] = parse_args(token);
-    }
-    *n = i;
-    return commands;
-}
-
-/*
  * Parses a string representing a single command,
  * separated by space. WILL MODIFY THE STRING!!
  *
