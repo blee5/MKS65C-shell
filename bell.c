@@ -75,25 +75,36 @@ void loop()
         {
             print_user_info();
         }
-        bufcopy = buf = read_line();
-        if (buf == NULL)
+        bufcopy = buf = malloc(MAX_LENGTH);
+        fgets(buf, MAX_LENGTH, stdin);
+
+        /* Check if input fit in buffer */
+        if (buf[strlen(buf) - 1] == '\n')
         {
-            printf("bell: Input too long, max: %d\n", MAX_LENGTH);
+            /* Remove newline */
+            buf[strlen(buf) - 1] = 0;
         }
         else
         {
-            while (token = strsep(&bufcopy, ";"))
+            printf("bell: Input too long, max: %d\n", MAX_LENGTH);
+            /* Discard rest of stdin buffer so it's not read later */
+            int c;
+            do
+                c = getchar();
+            while (c != '\n');
+            continue;
+        }
+        while (token = strsep(&bufcopy, ";"))
+        {
+            args = parse_args(token);
+            if (args == NULL)
             {
-                args = parse_args(token);
-                if (args == NULL)
-                {
-                    printf("bell: Too many arguments, max: %d\n", MAX_ARGS);
-                }
-                else
-                {
-                    execute(args);
-                    free(args);
-                }
+                printf("bell: Too many arguments, max: %d\n", MAX_ARGS);
+            }
+            else
+            {
+                execute(args);
+                free(args);
             }
         }
         free(buf);
