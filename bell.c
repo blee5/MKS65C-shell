@@ -69,7 +69,10 @@ void loop()
     char **args;
     while (1)
     {
-        print_user_info();
+        if (isatty(STDIN_FILENO))
+        {
+            print_user_info();
+        }
         buf = read_line();
         if (buf == NULL)
         {

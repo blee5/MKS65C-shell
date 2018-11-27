@@ -19,25 +19,21 @@ NOTE: bell is currently incomplete
 
 ### Maaybe (if I have time)
 - Quotes and esacpe characters?
-- Probably do something with SIGINT
 - Tab completion
 - Wildcards
 
 ## Bugs
-- Piping into bell doesn't print newlines
-- SIGTSTP (Ctrl+Z) isn't handled and I don't think I want to
+- SIGTSTP (Ctrl+Z) isn't handled well
 
 ## Functions
 ```c
 void quit_shell();
 int execute(char **args);
 void print_user_info()
-void execute_commands(char *buf)
 void loop();
 int main();
 
 char *read_line();
-char ***parse_lines(char *args);
 char **parse_args(char *args);
 
 int bell_cd(char **args);

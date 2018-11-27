@@ -73,5 +73,5 @@ int bell_help(char **args)
 
 int bell_exit(char **args)
 {
-    return 1;
+    exit(0);
 }
