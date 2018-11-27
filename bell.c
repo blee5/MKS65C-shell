@@ -93,8 +93,8 @@ void loop()
                     printf("bell: Too many arguments, max: %d\n", MAX_ARGS);
                 }
             }
-            free(buf);
         }
+        free(buf);
     }
 }
 
@@ -102,5 +102,5 @@ int main()
 {
     signal(SIGINT, SIG_IGN);
     loop();
-    return 0;
+    return -1;
 }

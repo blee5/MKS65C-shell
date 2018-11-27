@@ -1,3 +1,11 @@
+#ifndef BELL
+#define BELL
+int execute(char **args);
+void print_user_info();
+void loop();
+int main();
+#endif
+
 #ifndef DEF_PARSER
 #define DEF_PARSER
 int MAX_ARGS;

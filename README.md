@@ -23,11 +23,11 @@ The `testcommands` directory has useful commands that you can run with bell by `
 - Wildcards
 
 ## Bugs
+- EOF (Ctrl+D) causes issues with input
 - SIGTSTP (Ctrl+Z) isn't handled well
 
 ## Functions
 ```c
-void quit_shell();
 int execute(char **args);
 void print_user_info()
 void loop();

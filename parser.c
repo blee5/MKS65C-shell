@@ -27,19 +27,21 @@ char *read_line()
 {
     char *buffer = malloc(MAX_LENGTH);
     fgets(buffer, MAX_LENGTH, stdin);
+
+    /* Check if input fit in buffer */
     if (buffer[strlen(buffer) - 1] == '\n')
     {
         /* Remove newline */
         buffer[strlen(buffer) - 1] = 0;
         return buffer;
     }
+
+    /* Input was too long, return null */
     free(buffer);
     /* Discard rest of stdin buffer */
     int c;
     do
-    {
         c = getchar();
-    }
     while (c != '\n');
     return 0;
 }
