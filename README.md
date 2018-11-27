@@ -24,12 +24,12 @@ The `testcommands` directory has useful commands that you can run with bell by `
 
 ## Bugs
 - EOF (Ctrl+D) causes issues with input
-- SIGTSTP (Ctrl+Z) isn't handled well
+- SIGTSTP (Ctrl+Z) isn't handled well (more like at all)
 
 ## Functions
 ```c
 int execute(char **args);
-void print_user_info()
+void print_user_info();
 void loop();
 int main();
 
