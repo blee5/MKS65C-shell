@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include "bell.h"
 
 #define BOLD "\e[1m"
@@ -84,20 +85,30 @@ void loop()
             while (token = strsep(&bufcopy, ";"))
             {
                 args = parse_args(token);
-                if (args)
+                if (args == NULL)
                 {
-                    execute(args);
-                    free(args);
+                    printf("bell: Too many arguments, max: %d\n", MAX_ARGS);
                 }
                 else
                 {
-                    printf("bell: Too many arguments, max: %d\n", MAX_ARGS);
+                    execute(args);
+                    free(args);
                 }
             }
         }
         free(buf);
     }
 }
+
+/*     
+ *     TODO
+ *     int stdout_backup = dup(STDOUT_FILENO);
+ *     int fd = open(filename, O_CREAT | O_RDWR, 0644);
+ * 
+ *     dup2(fd, STDOUT_FILENO);
+ *     <exec with child>
+ *     dup2(stdout_backup, STDOUT_FILENO);
+ */
 
 int main()
 {
