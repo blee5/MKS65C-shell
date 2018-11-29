@@ -1,0 +1,8 @@
+ls --color > temp
+cat temp>temp2; cat temp2  >  temp3
+hd temp > temp3;
+echo PRINTING temp1; cat temp;
+echo PRINTING temp2; cat temp2;
+echo PRINTING temp3; cat temp3;
+rm temp; rm temp2; rm temp3;
+exit
