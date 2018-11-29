@@ -13,54 +13,11 @@
 #define YELLOW "\x1B[33m"
 #define WHITE "\x1B[37m"
 
-/*
- * Runs a program or a shell builtin.
- */
-int execute(char **args)
+int main()
 {
-    int i;
-    if (args[0] == 0)
-    {
-        /* Command was empty */
-        return 0;
-    }
-    /* Check and run if builtin command */
-    for (i = 0; builtins[i]; i++)
-    {
-        if (strcmp(args[0], builtins[i]) == 0)
-        {
-            return (*f_builtins[i])(args);
-        }
-    }
-
-    /* Run program */
-    if (fork())
-    {
-        /* Parent process */
-        int status;
-        wait(&status);
-        return 0;
-    }
-    else
-    {
-        /* Child process */
-        signal(SIGINT, SIG_DFL); // allow child processes to be interrupted
-        execvp(args[0], args);
-        printf("%s: %s\n", args[0], strerror(errno));
-        exit(-1);
-    }
-}
-
-void print_user_info()
-{
-    char cwd[256];
-    char usr[256];
-    char hostname[256];
-    getcwd(cwd, 256);
-    getlogin_r(usr, 256);
-    gethostname(hostname, 256);
-    printf(GREEN BOLD "%s@%s" WHITE":" YELLOW "%s" WHITE REGULAR " >> ", usr, hostname, cwd);
-    fflush(stdout);
+    signal(SIGINT, SIG_IGN);
+    loop();
+    return -1;
 }
 
 void loop()
@@ -112,10 +69,16 @@ void loop()
             {
                 int stdout_backup = dup(STDOUT_FILENO);
                 int fd = open(redir_target, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-            
-                dup2(fd, STDOUT_FILENO);
-                execute(args);
-                dup2(stdout_backup, STDOUT_FILENO);
+                if (fd > 0)
+                {
+                    dup2(fd, STDOUT_FILENO);
+                    execute(args);
+                    dup2(stdout_backup, STDOUT_FILENO);
+                }
+                else
+                {
+                    printf("bell: %s: %s\n", redir_target, strerror(errno));
+                }
             }
             else
             {
@@ -127,10 +90,54 @@ void loop()
     }
 }
 
-
-int main()
+/*
+ * Runs a program or a shell builtin.
+ */
+int execute(char **args)
 {
-    signal(SIGINT, SIG_IGN);
-    loop();
-    return -1;
+    int i;
+    if (args[0] == 0)
+    {
+        /* Command was empty */
+        return 0;
+    }
+    /* Check and run if builtin command */
+    for (i = 0; builtins[i]; i++)
+    {
+        if (strcmp(args[0], builtins[i]) == 0)
+        {
+            return (*f_builtins[i])(args);
+        }
+    }
+
+    /* Run program */
+    if (fork())
+    {
+        /* Parent process */
+        int status;
+        wait(&status);
+        return 0;
+    }
+    else
+    {
+        /* Child process */
+        signal(SIGINT, SIG_DFL); // allow child processes to be interrupted
+        execvp(args[0], args);
+        printf("%s: %s\n", args[0], strerror(errno));
+        exit(-1);
+    }
 }
+
+void print_user_info()
+{
+    char cwd[256];
+    char usr[256];
+    char hostname[256];
+    getcwd(cwd, 256);
+    getlogin_r(usr, 256);
+    gethostname(hostname, 256);
+    printf(GREEN BOLD "%s@%s" WHITE":" YELLOW "%s" WHITE REGULAR " >> ", usr, hostname, cwd);
+    fflush(stdout);
+}
+
+
