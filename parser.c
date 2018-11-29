@@ -14,8 +14,32 @@ int MAX_ARGS = 100;
 int MAX_LENGTH = 500;
 
 /*
- * Parses a string representing a single command,
- * separated by space. WILL MODIFY THE STRING!!
+ * Parses a string representing a command
+ * Arguments:
+ * line: command line input
+ *
+ * Return value:
+ * filename to redirect stdout to
+ * NULL if no redirection occurs
+ */
+char *get_redir(char *line)
+{
+    char *p = strchr(line, '>');
+    if (p)
+    {
+        while (*p == ' ' || *p == '>')
+        {
+            *(p++) = 0;
+        }
+        return p;
+    }
+    return NULL;
+}
+
+/*
+ * Parses a string representing a single command separated by space.
+ * Will return all the arguments for the command.
+ * WILL MODIFY THE STRING!! (Due to strsep being used)
  *
  * Arguments:
  * args: string describing command line input

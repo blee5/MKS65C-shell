@@ -11,6 +11,7 @@ int main();
 int MAX_ARGS;
 int MAX_LENGTH;
 char **parse_args(char *args);
+char *get_redir(char *line);
 #endif
 
 #ifndef DEF_BUILTINS

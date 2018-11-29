@@ -8,8 +8,10 @@ The `testcommands` directory has useful commands that you can run with bell by `
 ## Features
 
 - Has nice builtin commands like `help`, `cd`, `exit`
+- Quit shell by pressing Ctrl D
 - You can execute programs wow
 - Multiple commands on one line (with `;`)
+- Redirecting with `>` works
 - Organic, free range, GMO free shell made in the USA
 - Ceritifed memory leak free (probably not)
 
@@ -23,7 +25,7 @@ The `testcommands` directory has useful commands that you can run with bell by `
 - Wildcards
 
 ## Bugs
-- EOF (Ctrl+D) causes issues with input
+- EOF (Ctrl+D) breaks stuff if entered in middle of line
 - SIGTSTP (Ctrl+Z) isn't handled well (more like at all)
 
 ## Functions

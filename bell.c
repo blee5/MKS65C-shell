@@ -77,29 +77,45 @@ void loop()
         }
         bufcopy = buf = malloc(MAX_LENGTH);
         fgets(buf, MAX_LENGTH, stdin);
-
+        /* EOF at beginning of line, exit shell */
+        if (strlen(buf) == 0) 
+        {
+            printf("\n");
+            exit(0);
+        }
         /* Check if input fit in buffer */
-        if (buf[strlen(buf) - 1] == '\n')
+        else if (buf[strlen(buf) - 1] == '\n')
         {
             /* Remove newline */
             buf[strlen(buf) - 1] = 0;
         }
         else
         {
+            /* Input didn't fit into buffer, discard rest of stdin so it's not read later */
             printf("bell: Input too long, max: %d\n", MAX_LENGTH);
-            /* Discard rest of stdin buffer so it's not read later */
             int c;
             do
                 c = getchar();
-            while (c != '\n');
+            while (c != '\n' && c != EOF);
             continue;
         }
         while (token = strsep(&bufcopy, ";"))
         {
+            char *redir_target = get_redir(token);
             args = parse_args(token);
             if (args == NULL)
             {
                 printf("bell: Too many arguments, max: %d\n", MAX_ARGS);
+                continue;
+            }
+            if (redir_target)
+            {
+                int stdout_backup = dup(STDOUT_FILENO);
+                int fd = open(redir_target, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+            
+                dup2(fd, STDOUT_FILENO);
+                execute(args);
+                dup2(stdout_backup, STDOUT_FILENO);
             }
             else
             {
@@ -111,15 +127,6 @@ void loop()
     }
 }
 
-/*     
- *     TODO
- *     int stdout_backup = dup(STDOUT_FILENO);
- *     int fd = open(filename, O_CREAT | O_RDWR, 0644);
- * 
- *     dup2(fd, STDOUT_FILENO);
- *     <exec with child>
- *     dup2(stdout_backup, STDOUT_FILENO);
- */
 
 int main()
 {
