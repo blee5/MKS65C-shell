@@ -1,8 +1,9 @@
+echo =====STDOUT REDIRECTION TEST=====
 ls --color > temp
 echo This line should be concatenated to the end >> temp
 cat temp
-echo =====SAME THING, DIF ORDER=====
+echo =====STDIN REDIRECTION=====
 grep a --color < temp
-echo =====SAME THING, DIF ORDER 2=====
+echo =====SAME THING, DIF ORDER=====
 grep < temp a --color
 rm temp
