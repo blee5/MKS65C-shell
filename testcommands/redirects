@@ -1,7 +1,8 @@
 ls --color > temp
-echo CONCATENATING! >> temp
+echo This line should be concatenated to the end >> temp
 cat temp
-echo =====BOTH SHOULD WORK=====
-grep a < temp
-grep < temp a
+echo =====SAME THING, DIF ORDER=====
+grep a --color < temp
+echo =====SAME THING, DIF ORDER 2=====
+grep < temp a --color
 rm temp

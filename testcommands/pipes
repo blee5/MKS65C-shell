@@ -1,6 +1,6 @@
 echo =====TESTING BASIC PIPE=====
-ls --color | grep a
-cat bell.c | grep printf
+ls --color | grep a --color
+cat bell.c | grep printf --color
 echo =====PIPES AND REDIRECTS AT ONCE=====
 ls > whywouldyoudothis | grep a
 grep < whywouldyoudothis b | wc
