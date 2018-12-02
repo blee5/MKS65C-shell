@@ -74,32 +74,28 @@ void loop()
 
 void pipe_handler(char *line)
 {
-    char *command = line;
-    while (command)
+    // TODO: Multiple pipes
+    char *command = strsep(&line, "|");
+    char *next_command = strsep(&line, "|");
+    int p[2];
+    int stdout_backup = dup(STDOUT_FILENO);
+    int stdin_backup = dup(STDIN_FILENO);
+    pipe(p);
+    if (fork() == 0)
     {
-        command = strsep(&line, "|");
-        char *next_command = strsep(&line, "|");
-        int p[2];
-        int stdout_backup = dup(STDOUT_FILENO);
-        int stdin_backup = dup(STDIN_FILENO);
-        pipe(p);
-        int child_pid = fork();
-        if (child_pid == 0)
-        {
-            close(p[P_READ]);
-            dup2(p[P_WRITE], STDOUT_FILENO);
-            run_command(command);
-            close(STDIN_FILENO);
-            exit(0);
-        }
-        else
-        {
-            close(p[P_WRITE]);
-            dup2(p[P_READ], STDIN_FILENO);
-            waitpid(child_pid, NULL, WNOHANG);
-            run_command(next_command);
-            dup2(stdin_backup, STDIN_FILENO);
-        }
+        close(p[P_READ]);
+        dup2(p[P_WRITE], STDOUT_FILENO);
+        run_command(command);
+        close(STDIN_FILENO);
+        exit(0);
+    }
+    else
+    {
+        close(p[P_WRITE]);
+        dup2(p[P_READ], STDIN_FILENO);
+        wait(NULL);
+        run_command(next_command);
+        dup2(stdin_backup, STDIN_FILENO);
     }
 }
 
@@ -197,11 +193,10 @@ int execute(char **args)
     }
 
     /* Run program */
-    int child_pid = fork();
-    if (child_pid)
+    if (fork())
     {
         /* Parent process */
-        waitpid(child_pid, NULL, 0);
+        wait(NULL);
         return 0;
     }
     else
