@@ -83,19 +83,19 @@ void pipe_handler(char *line)
     pipe(p);
     if (fork() == 0)
     {
-        close(p[P_READ]);
-        dup2(p[P_WRITE], STDOUT_FILENO);
-        run_command(command);
-        close(STDIN_FILENO);
-        exit(0);
-    }
-    else
-    {
         close(p[P_WRITE]);
         dup2(p[P_READ], STDIN_FILENO);
         wait(NULL);
         run_command(next_command);
         dup2(stdin_backup, STDIN_FILENO);
+    }
+    else
+    {
+        close(p[P_READ]);
+        dup2(p[P_WRITE], STDOUT_FILENO);
+        run_command(command);
+        close(STDIN_FILENO);
+        exit(0);
     }
 }
 
