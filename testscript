@@ -1,0 +1,5 @@
+#!/bin/bash
+
+for i in $( ls testcommands ); do
+    ./bell < testcommands/$i
+done

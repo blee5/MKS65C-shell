@@ -1,9 +1,12 @@
 #ifndef BELL
 #define BELL
-int execute(char **args);
-void print_user_info();
-void loop();
 int main();
+void loop();
+void print_user_info();
+void run_command(char *command);
+void pipe_handler(char *line);
+int execute(char **args);
+void redir_exe(char **args, char *r_stdout);
 #endif
 
 #ifndef DEF_PARSER
@@ -11,7 +14,6 @@ int main();
 int MAX_ARGS;
 int MAX_LENGTH;
 char **parse_args(char *args);
-char *get_redir(char *line);
 #endif
 
 #ifndef DEF_BUILTINS

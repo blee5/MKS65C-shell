@@ -1,9 +1,7 @@
-ls --color
+echo =====TESTING VARIOUS COMMANDS=====
 mkdir foo
 ls --color
-echo heyhey whats up!!
 rmdir foo
-ls -l --color
+echo =====TESTING MULTIPLE COMMAND IN ONE LINE=====
 cd; ls --color; pwd; echo YEAH SEMICOLONS
 help
-exit

@@ -4,37 +4,8 @@
 #include <unistd.h>
 #include "bell.h"
 
-/*
- * parser.c
- * 
- * contains functions that handle user input
- */
-
 int MAX_ARGS = 100;
 int MAX_LENGTH = 500;
-
-/*
- * Parses a string representing a command
- * Arguments:
- * line: command line input
- *
- * Return value:
- * filename to redirect stdout to
- * NULL if no redirection occurs
- */
-char *get_redir(char *line)
-{
-    char *p = strchr(line, '>');
-    if (p)
-    {
-        while (*p == ' ' || *p == '>')
-        {
-            *(p++) = 0;
-        }
-        return p;
-    }
-    return NULL;
-}
 
 /*
  * Parses a string representing a single command separated by space.

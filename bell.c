@@ -12,6 +12,8 @@
 #define GREEN "\x1B[32m"
 #define YELLOW "\x1B[33m"
 #define WHITE "\x1B[37m"
+#define P_READ 0
+#define P_WRITE 1
 
 int main()
 {
@@ -24,24 +26,22 @@ void loop()
 {
     char *buf;
     char *bufcopy;
-    char *token;
-    char **args;
+    char *line;
     while (1)
     {
         if (isatty(STDIN_FILENO))
-        {
             print_user_info();
-        }
         bufcopy = buf = malloc(MAX_LENGTH);
         fgets(buf, MAX_LENGTH, stdin);
         /* EOF at beginning of line, exit shell */
         if (strlen(buf) == 0) 
         {
-            printf("\n");
+            if (isatty(STDIN_FILENO))
+                printf("\n");
             exit(0);
         }
         /* Check if input fit in buffer */
-        else if (buf[strlen(buf) - 1] == '\n')
+        if (buf[strlen(buf) - 1] == '\n')
         {
             /* Remove newline */
             buf[strlen(buf) - 1] = 0;
@@ -54,40 +54,126 @@ void loop()
             do
                 c = getchar();
             while (c != '\n' && c != EOF);
+            free(buf);
             continue;
         }
-        while (token = strsep(&bufcopy, ";"))
+        while (line = strsep(&bufcopy, ";"))
         {
-            char *redir_target = get_redir(token);
-            args = parse_args(token);
-            if (args == NULL)
+            if (strchr(line, '|'))
             {
-                printf("bell: Too many arguments, max: %d\n", MAX_ARGS);
-                continue;
-            }
-            if (redir_target)
-            {
-                int stdout_backup = dup(STDOUT_FILENO);
-                int fd = open(redir_target, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-                if (fd > 0)
-                {
-                    dup2(fd, STDOUT_FILENO);
-                    execute(args);
-                    dup2(stdout_backup, STDOUT_FILENO);
-                }
-                else
-                {
-                    printf("bell: %s: %s\n", redir_target, strerror(errno));
-                }
+                pipe_handler(line);
             }
             else
             {
-                execute(args);
-                free(args);
+                run_command(line);
             }
         }
         free(buf);
     }
+}
+
+void pipe_handler(char *line)
+{
+    char *command = line;
+    while (command)
+    {
+        command = strsep(&line, "|");
+        char *next_command = strsep(&line, "|");
+        int p[2];
+        int stdout_backup = dup(STDOUT_FILENO);
+        int stdin_backup = dup(STDIN_FILENO);
+        pipe(p);
+        int child_pid = fork();
+        if (child_pid == 0)
+        {
+            close(p[P_READ]);
+            dup2(p[P_WRITE], STDOUT_FILENO);
+            run_command(command);
+            close(STDIN_FILENO);
+            exit(0);
+        }
+        else
+        {
+            close(p[P_WRITE]);
+            dup2(p[P_READ], STDIN_FILENO);
+            waitpid(child_pid, NULL, WNOHANG);
+            run_command(next_command);
+            dup2(stdin_backup, STDIN_FILENO);
+        }
+    }
+}
+
+/*
+ * This function is a mess I'm sorry
+ */
+void run_command(char *command)
+{
+    int stdout_backup = dup(STDOUT_FILENO);
+    int stdin_backup = dup(STDIN_FILENO);
+    int stdout_new_fd = stdout_backup;
+    int stdin_new_fd = stdin_backup;
+    int stdout_mode = O_CREAT | O_WRONLY;
+    int i, args_i;
+
+    char *stdout_new = NULL, *stdin_new = NULL;
+    char **tokens = parse_args(command);
+    char *args[MAX_ARGS];
+    if (tokens == NULL)
+    {
+        printf("bell: Too many arguments, max: %d\n", MAX_ARGS);
+        return;
+    }
+    for (args_i = i = 0; tokens[i]; i++)
+    {
+        if (strcmp(tokens[i], ">") == 0)
+        {
+            stdout_new = tokens[++i];
+            stdout_mode |= O_TRUNC;
+        }
+        else if (strcmp(tokens[i], ">>") == 0)
+        {
+            stdout_new = tokens[++i];
+            stdout_mode |= O_APPEND;
+        }
+        else if (strcmp(tokens[i], "<") == 0)
+        {
+            stdin_new = tokens[++i];
+        }
+        else
+        {
+            args[args_i++] = tokens[i];
+        }
+    }
+    args[args_i] = NULL;
+    if (stdout_new)
+    {
+        stdout_new_fd = open(stdout_new, stdout_mode, 0644);
+        if (stdout_new_fd < 0)
+        {
+            printf("bell: error redirecting stdout: %s: %s\n", stdout_new, strerror(errno));
+            free(tokens);
+            return;
+        }
+    }
+    else if (stdin_new)
+    {
+        stdin_new_fd = open(stdin_new, O_RDONLY);
+        if (stdin_new_fd < 0)
+        {
+            printf("bell: error redirecting stdin: %s: %s\n", stdin_new, strerror(errno));
+            free(tokens);
+            return;
+        }
+    }
+    dup2(stdout_new_fd, STDOUT_FILENO);
+    dup2(stdin_new_fd, STDIN_FILENO);
+    execute(args);
+    dup2(stdout_backup, STDOUT_FILENO);
+    dup2(stdin_backup, STDIN_FILENO);
+    
+    close(stdin_new_fd);
+    close(stdout_new_fd);
+    free(tokens);
 }
 
 /*
@@ -111,19 +197,21 @@ int execute(char **args)
     }
 
     /* Run program */
-    if (fork())
+    int child_pid = fork();
+    if (child_pid)
     {
         /* Parent process */
-        int status;
-        wait(&status);
+        waitpid(child_pid, NULL, 0);
         return 0;
     }
     else
     {
         /* Child process */
-        signal(SIGINT, SIG_DFL); // allow child processes to be interrupted
+        signal(SIGINT, SIG_DFL); // Allow child processes to be interrupted
         execvp(args[0], args);
         printf("%s: %s\n", args[0], strerror(errno));
+        /* This somehow fixes a weird bug with commands duplicating after an invalid command when reading stdin from a file*/
+        fclose(stdin);
         exit(-1);
     }
 }
@@ -139,5 +227,3 @@ void print_user_info()
     printf(GREEN BOLD "%s@%s" WHITE":" YELLOW "%s" WHITE REGULAR " >> ", usr, hostname, cwd);
     fflush(stdout);
 }
-
-
