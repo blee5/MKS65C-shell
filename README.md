@@ -24,6 +24,7 @@ Run `testscript` to test its basic features.
 - Most things are parsed by whitespace, so commands such as `ls>a` do not work.
 - EOF (Ctrl+D) breaks stuff if entered in middle of line
 - Doesn't kill child processes when exiting
+- Invalid syntax with redirection (such as `ls >>`) isn't checked and likely causes errors
 
 ## Functions
 ```c
